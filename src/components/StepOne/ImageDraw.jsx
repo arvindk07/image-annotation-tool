@@ -32,14 +32,34 @@ const ImageDraw = () => {
     };
   };
 
-  const handleWheel = (e) => {
-    if (cursorMode === "zoom" && image) {
-      e.preventDefault();
-      const zoomIntensity = 0.1;
-      const newScale = scale + (e.deltaY < 0 ? zoomIntensity : -zoomIntensity);
-      setScale(Math.max(newScale, 0.1));
-    }
-  };
+  //   const handleWheel = (e) => {
+  //     if (cursorMode === "zoom" && image) {
+  //       e.preventDefault();
+  //       const zoomIntensity = 0.1;
+  //       const newScale = scale + (e.deltaY < 0 ? zoomIntensity : -zoomIntensity);
+  //       setScale(Math.max(newScale, 0.1));
+  //     }
+  //   };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+
+    const wheelHandler = (e) => {
+      if (cursorMode === "zoom" && image) {
+        e.preventDefault();
+        const zoomIntensity = 0.1;
+        const newScale =
+          scale + (e.deltaY < 0 ? zoomIntensity : -zoomIntensity);
+        setScale(Math.max(newScale, 0.1));
+      }
+    };
+
+    canvas.addEventListener("wheel", wheelHandler, { passive: false });
+
+    return () => {
+      canvas.removeEventListener("wheel", wheelHandler);
+    };
+  }, [cursorMode, image, scale]);
 
   return (
     <div>
@@ -52,7 +72,7 @@ const ImageDraw = () => {
       <div className="convas-wrap">
         <canvas
           ref={canvasRef}
-          onWheel={handleWheel}
+          //   onWheel={handleWheel}
           style={{
             cursor: cursorMode === "drag" ? "grab" : "default",
           }}
